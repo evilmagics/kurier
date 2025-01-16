@@ -3,8 +3,6 @@ Handle RabbitMQ delayed message and task using Go.
 
 The project seems to be designed to handle messages that need to be processed or delivered after a specified delay. This could be useful in various scenarios such as scheduled notifications, timed events, or implementing retry mechanisms.
 
-Inspired form [RabbitMQ Plugins](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange) and [Ghith Example](https://github.com/ghigt/rabbitmq-delayed), then develop this for easy use.
-
 ## Features
 - **Message Scheduling**: Ability to schedule messages for future processing or delivery.
 - **Configurable Delays**: Users can specify custom delay durations for each message.
@@ -221,3 +219,8 @@ type ConsumerConfig struct {
 	onConsume ConsumeFunc
 }
 ```
+
+## Acknowledgements
+Inspired by the [RabbitMQ Delayed Message Exchange Plugin](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange) and [Ghith's RabbitMQ Delayed Example](https://github.com/ghigt/rabbitmq-delayed).
+
+We're committed to improving and expanding this library. Your feedback and contributions are welcome!
