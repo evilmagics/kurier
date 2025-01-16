@@ -1,5 +1,9 @@
 # Go Delayed Message
+Handle RabbitMQ delayed message and task using Go.
+
 The project seems to be designed to handle messages that need to be processed or delivered after a specified delay. This could be useful in various scenarios such as scheduled notifications, timed events, or implementing retry mechanisms.
+
+Inspired form [RabbitMQ Plugins](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange) and [Ghith Example](https://github.com/ghigt/rabbitmq-delayed), then develop this for easy use.
 
 ## Features
 - **Message Scheduling**: Ability to schedule messages for future processing or delivery.
