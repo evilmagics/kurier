@@ -53,14 +53,14 @@ type QueueBindConfig struct {
 // queue string, consumer string, autoAck bool, exclusive bool, noLocal bool, noWait bool, args amqp.Table
 type ConsumeFunc func(d amqp.Delivery) error
 type ConsumerConfig struct {
-	Queue     string
-	Consumer  string
-	AutoAck   bool
-	Exclusive bool
-	NoLocal   bool
-	NoWait    bool
-	Args      amqp.Table
-	onConsume ConsumeFunc
+	Queue         string
+	Consumer      string
+	AutoAck       bool
+	Exclusive     bool
+	NoLocal       bool
+	NoWait        bool
+	Args          amqp.Table
+	HandleConsume ConsumeFunc
 }
 
 func DefaultExchange(name string) ExchangeConfig {

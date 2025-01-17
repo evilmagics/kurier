@@ -50,7 +50,7 @@ func (cons *Consumer) Listen(config ConsumerConfig) error {
 		return err
 	}
 
-	go cons.consume(published, config.onConsume)
+	go cons.consume(published, config.HandleConsume)
 
 	return nil
 }
