@@ -61,6 +61,8 @@ type ConsumerConfig struct {
 	NoWait        bool
 	Args          amqp.Table
 	HandleConsume ConsumeFunc
+	Workers       int
+	EnableMetrics bool
 }
 
 func DefaultExchange(name string) ExchangeConfig {
