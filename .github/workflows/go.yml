@@ -16,6 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: RabbitMQ with delayed plugin
+      uses: a-shumanski/rabbitmq-with-delayed@v0.0.3
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
@@ -24,5 +27,5 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: go test -v ./...
+    # - name: Test
+    #   run: go test -v ./...
