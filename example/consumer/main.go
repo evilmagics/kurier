@@ -1,10 +1,19 @@
 package main
 
 import (
+	"os"
 	"time"
 
+	kurier "github.com/evilmagics/kurier"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/rs/zerolog"
 )
+
+var log zerolog.Logger = zerolog.
+	New(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.DateTime}).
+	With().
+	Timestamp().
+	Logger()
 
 func handleConsumption(d amqp.Delivery) error {
 	log.Debug().
@@ -15,12 +24,12 @@ func handleConsumption(d amqp.Delivery) error {
 	return nil
 }
 func main() {
-	config := Config{
+	config := kurier.Config{
 		AppName:           "test_consumer",
 		RetryConnInterval: 5 * time.Second,
 		AMQPUrl:           "amqp://guest:guest@localhost:5672",
 	}
-	consumerConfig := ConsumerConfig{
+	consumerConfig := kurier.ConsumerConfig{
 		Queue:         "payments-status",
 		Consumer:      "payments.status.consumer",
 		AutoAck:       false,
@@ -32,7 +41,7 @@ func main() {
 		EnableMetrics: true,
 	}
 
-	cons, err := NewConsumer(config)
+	cons, err := kurier.NewConsumer(config)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed create new RabbitMQ producer!")
 	}

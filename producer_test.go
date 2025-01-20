@@ -1,4 +1,4 @@
-package main
+package kurier
 
 import (
 	"encoding/json"
@@ -44,10 +44,12 @@ func TestProducer(t *testing.T) {
 		t.Fatalf("Failed marshal body payload! %s", err.Error())
 	}
 
-	err = prod.PublishDelayed(config.Exchange[0].Name, config.Queue[0].Bind.Key, body, 10*time.Second)
+	err = prod.PublishDelayed(config.Exchange[0].Name, config.Queue[0].Bind.Key, body, 3*time.Second)
 	if err != nil {
 		t.Fatalf("failed to publish into rabbitmq: %v", err)
 	}
+
+	t.Fail()
 }
 func BenchmarkProducer(t *testing.B) {
 	config := testProducerConfig()
