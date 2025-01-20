@@ -1,4 +1,4 @@
-# Go Delayed Message
+# Kurier
 Handle RabbitMQ delayed message and task using Go.
 
 The project seems to be designed to handle messages that need to be processed or delivered after a specified delay. This could be useful in various scenarios such as scheduled notifications, timed events, or implementing retry mechanisms.
@@ -32,7 +32,7 @@ The project seems to be designed to handle messages that need to be processed or
 
   2. **Installation**
         ```bash
-        go get github.com/evilmagics/go_delayed_message
+        go get github.com/evilmagics/kurier
         ```
 
         **Recommendation**: Clean and update package before using.
@@ -41,7 +41,7 @@ The project seems to be designed to handle messages that need to be processed or
         ```
 
 ## Usage
-Here's a simple example of how to use the Go Delayed Message library in your application. 
+Here's a simple example of how to use the Kurier library in your application. 
 
 ### Producer
 The producer has two functions that both send data to the exchange on the RabbitMQ service. For configuration can read on [configuration](#configuration) section. 
@@ -122,7 +122,7 @@ The consumer is responsible for receiving and processing messages from RabbitMQ 
    import (
        "fmt"
        "time"
-       "github.com/evilmagics/go_delayed_message"
+       "github.com/evilmagics/kurier"
    )
 
    func main() {
