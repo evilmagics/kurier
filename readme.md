@@ -1,16 +1,28 @@
-# Kurier
-Handle RabbitMQ delayed message and task using Go.
+
+<img 
+    style="display: block; 
+           margin-left: auto;
+           margin-right: auto;
+           width: 30%;"
+    src="assets/logo.png" 
+    alt="Our logo">
+</img>
+<div style="text-align:center">
+Handle <b><i>RabbitMQ</i></b> delayed message and task for Go.
+</div>
+
+# ⚡ Kurier
 
 The project seems to be designed to handle messages that need to be processed or delivered after a specified delay. This could be useful in various scenarios such as scheduled notifications, timed events, or implementing retry mechanisms.
 
-## Features
+## 🔔 Features
 - **Message Scheduling**: Ability to schedule messages for future processing or delivery.
 - **Configurable Delays**: Users can specify custom delay durations for each message.
 - **Persistent Storage**: Messages are stored safely to survive application restarts.
 - **Scalable Architecture**: Designed to handle a large volume of delayed messages efficiently.
 - **Producer-Consumer Model**: Separate components for message production and consumption.
 
-## Components
+## 🧩 Components
 1. **Producer**: Responsible for creating and scheduling delayed messages.
 2. **Consumer**: Processes or delivers messages when their delay time has elapsed.
 3. **Engine**: Core component managing the delay mechanism and message flow.
@@ -18,13 +30,13 @@ The project seems to be designed to handle messages that need to be processed or
 5. **Logger**: Provides detailed logging for monitoring and debugging.
 6. **Connections**: Manages any necessary RabbitMQ connections.
 
-## Use Cases
+## 🪄 Use Cases
 - Sending reminder emails or notifications at specific times.
 - Implementing retry logic for failed operations.
 - Scheduling tasks or jobs to run at future times.
 - Managing time-sensitive workflows in distributed systems.
 
-## Installation
+## ⚙️ Installation
   1. **Prerequisites**
      - RabbitMQ 4.0.5+
      - Erlang 27.2+
@@ -40,7 +52,7 @@ The project seems to be designed to handle messages that need to be processed or
         go mod tidy
         ```
 
-## Usage
+## 🎯 Usage
 Here's a simple example of how to use the Kurier library in your application. 
 
 ### Producer
@@ -220,7 +232,7 @@ type ConsumerConfig struct {
 }
 ```
 
-## Acknowledgements
+## 💡 Acknowledgements
 Inspired by the [RabbitMQ Delayed Message Exchange Plugin](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange) and [Ghith's RabbitMQ Delayed Example](https://github.com/ghigt/rabbitmq-delayed).
 
 We're committed to improving and expanding this library. Your feedback and contributions are welcome!
