@@ -31,7 +31,7 @@ func declareQueue(chann *amqp.Channel, queue []QueueConfig) error {
 		}
 		err = chann.QueueBind(q.Name, qc.Bind.Key, qc.Bind.Exchange, qc.Bind.NoWait, qc.Bind.Args)
 		if err != nil {
-			return errors.Wrapf(err, "declaring queue %q", qc.Name)
+			return errors.Wrapf(err, "binding queue %q", qc.Name)
 		}
 	}
 
