@@ -17,7 +17,7 @@ func declareExchange(chann *amqp.Channel, exchanges []ExchangeConfig) (err error
 			ex.Args,
 		)
 		if err != nil {
-			return errors.Wrapf(err, "declaring exchange %q", "delayed")
+			return errors.Wrapf(err, "declaring exchange %q", ex.Name)
 		}
 	}
 	return nil
