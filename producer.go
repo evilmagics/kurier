@@ -19,8 +19,6 @@ func (prod *Producer) PublishDelayed(exchange, key string, body []byte, delay ti
 func (prod *Producer) publish(exchange, key string, body []byte, delay time.Duration) error {
 	headers := make(amqp.Table)
 
-	prod.logger.Debug().Str("exchange", exchange).Str("key", key).Msg("publishing")
-
 	if delay > 0 {
 		headers["x-delay"] = delay.Milliseconds()
 	}

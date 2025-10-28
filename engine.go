@@ -7,13 +7,31 @@ import (
 	"github.com/rs/zerolog"
 )
 
+type NetworkState int
+
+const (
+	NetworkConnecting NetworkState = iota
+	NetworkConnectingFailed
+	NetworkConnected
+	NetworkDisconnecting
+	NetworkDisconnectingFailed
+	NetworkDisconnected
+	NetworkReconnecting
+	NetworkReconnectingFailed
+	NetworkReconnected
+	NetworkShutdown
+)
+
+type NetworkStateHook func(state NetworkState)
+
 type engine struct {
-	URL        string
-	Conn       *amqp.Connection
-	Chann      *amqp.Channel
-	closeChann chan *amqp.Error
-	quitChann  chan bool
-	logger     zerolog.Logger
+	URL         string
+	Conn        *amqp.Connection
+	Chann       *amqp.Channel
+	closeChann  chan *amqp.Error
+	quitChann   chan bool
+	logger      zerolog.Logger
+	networkHook NetworkStateHook
 }
 
 func (e *engine) load(config Config) error {
@@ -38,15 +56,21 @@ func (e *engine) load(config Config) error {
 
 	return nil
 }
+func (e *engine) setNetworkState(state NetworkState) {
+
+	if e.networkHook != nil {
+		e.networkHook(state)
+	}
+}
 
 func (e *engine) connect() (err error) {
 	e.Conn, e.Chann, err = createConnection(e.URL)
 	if err != nil {
-		e.logger.Error().Err(err).Msg("failed to connect to rabbitMQ")
+		e.setNetworkState(NetworkDisconnectingFailed)
 		return err
 	}
 
-	e.logger.Info().Msg("Connected to RabbitMQ")
+	e.setNetworkState(NetworkConnected)
 
 	e.closeChann = make(chan *amqp.Error)
 	e.Conn.NotifyClose(e.closeChann)
@@ -56,7 +80,7 @@ func (e *engine) connect() (err error) {
 
 func (e *engine) Shutdown() {
 	e.quitChann <- true
-	e.logger.Info().Msg("shutting down rabbitMQ connection")
+	e.setNetworkState(NetworkShutdown)
 	<-e.quitChann
 }
 
@@ -65,20 +89,21 @@ func (e *engine) handleDisconnect(config Config) {
 		select {
 		case errChann := <-e.closeChann:
 			if errChann != nil {
-				e.logger.Error().Err(errChann).Msg("rabbitMQ disconnected")
+				e.setNetworkState(NetworkDisconnected)
 			}
 		case <-e.quitChann:
 			e.Conn.Close()
-			e.logger.Info().Msg("rabbitMQ has been shut down")
+			e.setNetworkState(NetworkShutdown)
 			e.quitChann <- true
 			return
 		}
-		e.logger.Info().Msg("trying to reconnect to rabbitMQ")
+
+		e.setNetworkState(NetworkReconnecting)
 
 		time.Sleep(config.RetryConnInterval)
 
 		if err := e.connect(); err != nil {
-			e.logger.Error().Err(err).Msg("reconnecting rabbitMQ failed")
+			e.setNetworkState(NetworkDisconnectingFailed)
 		}
 	}
 }
@@ -87,8 +112,11 @@ func createEngine(config Config) engine {
 	if config.Logger == nil {
 		config.Logger = &log
 	}
-	return engine{
-		URL:    config.AMQPUrl,
-		logger: *config.Logger,
+	e := engine{
+		URL:         config.AMQPUrl,
+		logger:      *config.Logger,
+		networkHook: config.NetworkStateHook,
 	}
+
+	return e
 }
