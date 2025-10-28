@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.3+1]
+## [1.0.3+1]() - 2025-10-28
 
 ### Added
 
@@ -17,19 +17,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored the consumer waiting method.
 - Refactored logger usage to use the logger from the engine, not the global logger.
 
-## [1.0.3] - 2025-01-24
+## [1.0.3]() - 2025-01-24
 
 ### Changed
 
 - Display better logging.
 
-## [1.0.2] - 2025-01-20
+## [1.0.2]() - 2025-01-20
 
 ### Changed
 
 - Changing package name to "kurier"
 
-## [1.0.1] - 2025-01-20
+## [1.0.1]() - 2025-01-20
 
 ### Added
 
@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored message consumption to use worker pool pattern.
 - Improved throughput with parallel message processing.
 
-## [1.0.0] - 2025-01-16
+## [1.0.0]() - 2025-01-16
 
 Handle RabbitMQ delayed message and task using Go.
 
