@@ -82,26 +82,19 @@ func (cons *Consumer) consume(config ConsumerConfig) {
 		config.Args,
 	)
 	if err != nil {
-		log.Warn().Err(err).Msg("Failed create delivery consumer")
+		cons.logger.Warn().Err(err).Msg("Failed create delivery consumer")
 		return
 	}
 
-	for {
-		select {
-		case d, ok := <-ds:
-			if !ok {
-				return
-			}
-			cons.consumeJob(d, config.HandleConsume)
-
-			d.Ack(false)
-		}
+	for d := range ds {
+		cons.consumeJob(d, config.HandleConsume)
+		d.Ack(false)
 	}
 }
 
 func (cons *Consumer) consumeJob(d amqp.Delivery, fn ConsumeFunc) {
 	cons.pool.Submit(func() {
-		log.Info().Str("body", string(d.Body)).Msg("consume")
+		cons.logger.Info().Str("body", string(d.Body)).Msg("consume")
 
 		// Do something on consumtions
 		if fn != nil {
@@ -135,9 +128,9 @@ func (cons *Consumer) Listen(config ConsumerConfig) error {
 	if config.EnableMetrics {
 		cons.registerPromotheus(cons.pool)
 
-		log.Info().Msg("Prometheus metrics server started on localhost:8989")
+		cons.logger.Info().Msg("Prometheus metrics server started on localhost:8989")
 		if err := http.ListenAndServe(":8989", nil); err != nil {
-			log.Warn().Err(err).Msg("Failed to start Prometheus metrics server")
+			cons.logger.Warn().Err(err).Msg("Failed to start Prometheus metrics server")
 		}
 	}
 

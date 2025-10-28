@@ -4,6 +4,7 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/rs/zerolog"
 )
 
 type engine struct {
@@ -12,6 +13,7 @@ type engine struct {
 	Chann      *amqp.Channel
 	closeChann chan *amqp.Error
 	quitChann  chan bool
+	logger     zerolog.Logger
 }
 
 func (e *engine) load(config Config) error {
@@ -40,8 +42,11 @@ func (e *engine) load(config Config) error {
 func (e *engine) connect() (err error) {
 	e.Conn, e.Chann, err = createConnection(e.URL)
 	if err != nil {
+		e.logger.Error().Err(err).Msg("failed to connect to rabbitMQ")
 		return err
 	}
+
+	e.logger.Info().Msg("Connected to RabbitMQ")
 
 	e.closeChann = make(chan *amqp.Error)
 	e.Conn.NotifyClose(e.closeChann)
@@ -51,7 +56,7 @@ func (e *engine) connect() (err error) {
 
 func (e *engine) Shutdown() {
 	e.quitChann <- true
-	log.Info().Msg("shutting down rabbitMQ connection")
+	e.logger.Info().Msg("shutting down rabbitMQ connection")
 	<-e.quitChann
 }
 
@@ -60,26 +65,30 @@ func (e *engine) handleDisconnect(config Config) {
 		select {
 		case errChann := <-e.closeChann:
 			if errChann != nil {
-				log.Error().Err(errChann).Msg("rabbitMQ disconnected")
+				e.logger.Error().Err(errChann).Msg("rabbitMQ disconnected")
 			}
 		case <-e.quitChann:
 			e.Conn.Close()
-			log.Info().Msg("rabbitMQ has been shut down")
+			e.logger.Info().Msg("rabbitMQ has been shut down")
 			e.quitChann <- true
 			return
 		}
-		log.Info().Msg("trying to reconnect to rabbitMQ")
+		e.logger.Info().Msg("trying to reconnect to rabbitMQ")
 
 		time.Sleep(config.RetryConnInterval)
 
 		if err := e.connect(); err != nil {
-			log.Error().Err(err).Msg("reconnecting rabbitMQ failed")
+			e.logger.Error().Err(err).Msg("reconnecting rabbitMQ failed")
 		}
 	}
 }
 
 func createEngine(config Config) engine {
+	if config.Logger == nil {
+		config.Logger = &log
+	}
 	return engine{
-		URL: config.AMQPUrl,
+		URL:    config.AMQPUrl,
+		logger: *config.Logger,
 	}
 }

@@ -17,7 +17,7 @@ func declareExchange(chann *amqp.Channel, exchanges []ExchangeConfig) (err error
 			ex.Args,
 		)
 		if err != nil {
-			return errors.Wrapf(err, "declaring exchange %q", "delayed")
+			return errors.Wrapf(err, "declaring exchange %q type of %q", ex.Name, ex.Kind)
 		}
 	}
 	return nil
@@ -27,11 +27,11 @@ func declareQueue(chann *amqp.Channel, queue []QueueConfig) error {
 	for _, qc := range queue {
 		q, err := chann.QueueDeclare(qc.Name, qc.Durable, qc.AutoDelete, qc.Exclusive, qc.NoWait, qc.Args)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "declaring queue %q", qc.Name)
 		}
 		err = chann.QueueBind(q.Name, qc.Bind.Key, qc.Bind.Exchange, qc.Bind.NoWait, qc.Bind.Args)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "binding queue %q", qc.Name)
 		}
 	}
 
