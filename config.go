@@ -19,7 +19,7 @@ type Config struct {
 	Exchange          []ExchangeConfig `json:"exchanges"`
 	Queue             []QueueConfig    `json:"queue"`
 	LogLevel          zerolog.Level    `json:"-"`
-	logger            zerolog.Logger   `json:"-"`
+	Logger            *zerolog.Logger  `json:"-"`
 	RetryConnInterval time.Duration    `json:"-"`
 }
 

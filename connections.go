@@ -16,7 +16,5 @@ func createConnection(url string) (*amqp.Connection, *amqp.Channel, error) {
 		return nil, nil, err
 	}
 
-	log.Info().Msg("connection to rabbitMQ established")
-
 	return conn, chann, nil
 }
