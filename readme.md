@@ -41,14 +41,16 @@ The project seems to be designed to handle messages that need to be processed or
      - Go 1.16+
 
   2. **Installation**
-    ```bash
-    go get github.com/evilmagics/kurier
-    ```
 
-    **Recommendation**: Clean and update package before using.
-    ```bash
-    go mod tidy
-    ```
+```bash
+go get github.com/evilmagics/kurier
+```
+
+**Recommendation**: Clean and update package before using.
+	
+```bash
+go mod tidy
+```
 
 ## 🎯 Usage
 
@@ -91,40 +93,40 @@ func main() {
 }
 ```
 
-1. **Preparing body payload**
+2. **Preparing body payload**
 
-    ```go
-    data := map[string]interface{}{
-        "user_id":    "usr_0001",
-    }
+```go
+data := map[string]interface{}{
+	"user_id":    "usr_0001",
+}
 
-    body, err := json.Marshal(data)
-    if err != nil {
-        t.Fatalf("Failed marshal body payload! %s", err.Error())
-    }
-    ```
-
-2. **Publish**
-
-    Publish to exchanges directly without any delay.
-
-    ```go
-        err = prod.Publish(config.Exchange[0].Name, config.Queue[0].Bind.Key, body)
-        if err != nil {
-            t.Fatalf("failed to publish into rabbitmq: %v", err)
-        }
-    ```
+body, err := json.Marshal(data)
+if err != nil {
+	t.Fatalf("Failed marshal body payload! %s", err.Error())
+}
+```
 
 3. **Publish**
 
-    Publish to exchanges using delay on milliseconds (ms) refer to [limitation](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange?tab=readme-ov-file#limitations) and should using `time.Duration` from build-in golang time package.
+    Publish to exchanges directly without any delay.
 
-    ```go
-    err = prod.PublishDelayed(config.Exchange[0].Name, config.Queue[0].Bind.Key, body, 5*time.Second)
-	if err != nil {
-		t.Fatalf("failed to publish into rabbitmq: %v", err)
-	}
-    ```
+```go
+err = prod.Publish(config.Exchange[0].Name, config.Queue[0].Bind.Key, body)
+if err != nil {
+	t.Fatalf("failed to publish into rabbitmq: %v", err)
+}
+```
+
+4. **Publish Delayed**
+
+Publish to exchanges using delay on milliseconds (ms) refer to [limitation](https://github.com/rabbitmq/rabbitmq-delayed-message-exchange?tab=readme-ov-file#limitations) and should using `time.Duration` from build-in golang time package.
+
+```go
+err = prod.PublishDelayed(config.Exchange[0].Name, config.Queue[0].Bind.Key, body, 5*time.Second)
+if err != nil {
+	t.Fatalf("failed to publish into rabbitmq: %v", err)
+}
+```
 
 ### Consumer
 
@@ -134,39 +136,39 @@ The consumer is responsible for receiving and processing messages from RabbitMQ 
 
    Consumer initialization does not require as much configuration as producer. The configuration for consumer requires RabbitMQ AMQP URL to connect to RabbitMQ.
 
-    ```go
-        package main
+```go
+package main
 
-        import (
-            "fmt"
-            "time"
-            "github.com/evilmagics/kurier"
-        )
+import (
+	"fmt"
+	"time"
+	"github.com/evilmagics/kurier"
+)
 
-        func main() {
-                config := Config{
-                    AppName:           "test_consumer",
-                    RetryConnInterval: 5 * time.Second,
-                    AMQPUrl:           "amqp://guest:guest@localhost:5672",
-                }
+func main() {
+	config := Config{
+		AppName:           "test_consumer",
+		RetryConnInterval: 5 * time.Second,
+		AMQPUrl:           "amqp://guest:guest@localhost:5672",
+	}
 
-                cons, err := NewConsumer(config)
-                if err != nil {
-                    log.Fatal().Err(err).Msg("Failed create new RabbitMQ producer!")
-                }
+	cons, err := NewConsumer(config)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed create new RabbitMQ producer!")
+	}
 
-                defer cons.Shutdown()
-        }
-    ```
+	defer cons.Shutdown()
+}
+```
 
 2. **Consumption**
 
-    ```gol
-    err = cons.Listen(DefaultConsumer("payments-status", "payments.status.consumer"))
-    if err != nil {
-        log.Fatal().Err(err).Msg("Failed listening RabbitMQ consumer!")
-    }
-    ```
+```gol
+err = cons.Listen(DefaultConsumer("payments-status", "payments.status.consumer"))
+if err != nil {
+	log.Fatal().Err(err).Msg("Failed listening RabbitMQ consumer!")
+}
+```
 
 ## Configuration
 
@@ -174,79 +176,79 @@ Setting up the Config struct with necessary RabbitMQ connection details and queu
 
 ### General Configuration
 
-    ```go
-    type Config struct {
-        AppName           string           `json:"app_name" default:"rabbitmq"`
-        AppVersion        string           `json:"app_version" default:"1.0.0"`
-        AMQPUrl           string           `json:"amqp_url"`
-        Exchange          []ExchangeConfig `json:"exchanges"`
-        Queue             []QueueConfig    `json:"queue"`
-        LogLevel          zerolog.Level    `json:"-"`
-        RetryConnInterval time.Duration    `json:"-"`
-    }
-    ```
+```go
+type Config struct {
+	AppName           string           `json:"app_name" default:"rabbitmq"`
+	AppVersion        string           `json:"app_version" default:"1.0.0"`
+	AMQPUrl           string           `json:"amqp_url"`
+	Exchange          []ExchangeConfig `json:"exchanges"`
+	Queue             []QueueConfig    `json:"queue"`
+	LogLevel          zerolog.Level    `json:"-"`
+	RetryConnInterval time.Duration    `json:"-"`
+}
+```
 
 ### Exchange Configuration
 
-    ```go
-        type ExchangeConfig struct {
-            Name       string
-            Kind       string
-            Durable    bool
-            AutoDelete bool
-            Internal   bool
-            NoWait     bool
-            Args       amqp.Table
-        }
-    ```
+```go
+type ExchangeConfig struct {
+	Name       string
+	Kind       string
+	Durable    bool
+	AutoDelete bool
+	Internal   bool
+	NoWait     bool
+	Args       amqp.Table
+}
+```
 
 ### Queue Configuration
 
-    ```go
-        type QueueConfig struct {
-            Name       string
-            Durable    bool
-            AutoDelete bool
-            Exclusive  bool
-            NoWait     bool
-            Args       amqp.Table
-            Bind       QueueBindConfig
-        }
-    ```
+```go
+type QueueConfig struct {
+	Name       string
+	Durable    bool
+	AutoDelete bool
+	Exclusive  bool
+	NoWait     bool
+	Args       amqp.Table
+	Bind       QueueBindConfig
+}
+```
 
 ### Queue Binding Configuration
 
-    ```go
-        type QueueBindConfig struct {
-            Key      string
-            Exchange string
-            NoWait   bool
-            Args     amqp.Table
-        }
-    ```
+```go
+type QueueBindConfig struct {
+	Key      string
+	Exchange string
+	NoWait   bool
+	Args     amqp.Table
+}
+```
 
 ### Consume Function
 
 This function type is used to define how each message should be processed when it's consumed from a queue.
 
-    ```go
-    type ConsumeFunc func(d amqp.Delivery) error
-    ```
+```go
+type ConsumeFunc func(d amqp.Delivery) error
+```
 
 ### Consumer Listener Configuration
 
-    ```go
-    type ConsumerConfig struct {
-        Queue     string
-        Consumer  string
-        AutoAck   bool
-        Exclusive bool
-        NoLocal   bool
-        NoWait    bool
-        Args      amqp.Table
-        onConsume ConsumeFunc
-    }
-    ```
+```go
+type ConsumerConfig struct {
+	Queue     string
+	Consumer  string
+	AutoAck   bool
+	Exclusive bool
+	NoLocal   bool
+	NoWait    bool
+	Args      amqp.Table
+	onConsume ConsumeFunc
+}
+```
 
 ## 💡 Acknowledgements
 
