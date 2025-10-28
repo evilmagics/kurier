@@ -71,7 +71,7 @@ func (cons *Consumer) registerPromotheus(pool pond.Pool) {
 	http.Handle("/metrics", promhttp.Handler())
 }
 
-func (cons *Consumer) consume(config ConsumerConfig) {
+func (cons *Consumer) consume(config ConsumerConfig) error {
 	ds, err := cons.Chann.Consume(
 		config.Queue,
 		config.Consumer,
@@ -82,14 +82,15 @@ func (cons *Consumer) consume(config ConsumerConfig) {
 		config.Args,
 	)
 	if err != nil {
-		cons.logger.Warn().Err(err).Msg("Failed create delivery consumer")
-		return
+		// cons.logger.Warn().Err(err).Msg("Failed create delivery consumer")
+		return err
 	}
 
 	for d := range ds {
 		cons.consumeJob(d, config.HandleConsume)
 		d.Ack(false)
 	}
+	return nil
 }
 
 func (cons *Consumer) consumeJob(d amqp.Delivery, fn ConsumeFunc) {

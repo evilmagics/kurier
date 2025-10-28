@@ -21,6 +21,7 @@ type Config struct {
 	LogLevel          zerolog.Level    `json:"-"`
 	Logger            *zerolog.Logger  `json:"-"`
 	RetryConnInterval time.Duration    `json:"-"`
+	NetworkStateHook  NetworkStateHook `json:"-"`
 }
 
 type ExchangeConfig struct {

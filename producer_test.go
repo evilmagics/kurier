@@ -48,8 +48,6 @@ func TestProducer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to publish into rabbitmq: %v", err)
 	}
-
-	t.Fail()
 }
 func BenchmarkProducer(t *testing.B) {
 	config := testProducerConfig()
